@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoveNote.exe</title>
+    <style>
+        * {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #008080;
+            background-image:
+                repeating-linear-gradient(
+                    45deg,
+                    #008080,
+                    #008080 2px,
+                    #00a0a0 2px,
+                    #00a0a0 4px
+                );
+            margin: 0;
+            padding: 20px;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Marquee banner */
+        .marquee-banner {
+            background: linear-gradient(to bottom, #0000aa, #0000cc, #0000aa);
+            color: #ffff00;
+            padding: 8px;
+            margin-bottom: 20px;
+            border: 3px outset #dfdfdf;
+            box-shadow: inset 1px 1px #ffffff, inset -1px -1px #808080, 1px 1px #000000, -1px -1px #dfdfdf;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        marquee {
+            color: #ffff00;
+            text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff;
+        }
+
+        /* Window chrome */
+        .window {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            box-shadow: inset 1px 1px #ffffff, inset -1px -1px #0a0a0a;
+            margin-bottom: 30px;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .window-title {
+            background: linear-gradient(to right, #000080, #1084d7);
+            color: #ffffff;
+            padding: 2px 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+
+        .window-title-text {
+            flex: 1;
+            padding: 2px 4px;
+        }
+
+        .window-buttons {
+            display: flex;
+            gap: 2px;
+            padding-right: 2px;
+        }
+
+        .window-btn {
+            width: 16px;
+            height: 14px;
+            background-color: #c0c0c0;
+            border: 1px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .window-content {
+            padding: 8px;
+            background-color: #c0c0c0;
+        }
+
+        /* Blinking text */
+        .blink {
+            animation: blink-animation 0.5s infinite;
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        @keyframes blink-animation {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Day trading message */
+        .day-trade-message {
+            background-color: #ffff00;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 12px;
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #000;
+        }
+
+        .warning-box {
+            background-color: #ff69b4;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #fff;
+            text-align: center;
+        }
+
+        /* Moving button */
+        .date-night-button {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            transition: none;
+            font-family: 'Comic Sans MS', cursive;
+            color: #000;
+        }
+
+        .date-night-button:active:not(.caught) {
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+            background: linear-gradient(135deg, #c0c0c0 0%, #808080 100%);
+        }
+
+        /* Dialog styling */
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dialog-overlay.show {
+            display: flex;
+        }
+
+        .dialog {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            box-shadow: inset 1px 1px #ffffff, inset -1px -1px #0a0a0a;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .dialog-title {
+            background: linear-gradient(to right, #000080, #1084d7);
+            color: #ffffff;
+            padding: 2px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+
+        .dialog-content {
+            padding: 16px;
+            text-align: center;
+            background-color: #c0c0c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 0 16px 16px;
+        }
+
+        .dialog-btn {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Comic Sans MS', cursive;
+            color: #000;
+            min-width: 80px;
+        }
+
+        .dialog-btn:active {
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+        }
+
+        /* Celebration */
+        .celebration {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .celebration.show {
+            display: block;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            left: 20px;
+            font-size: 12px;
+            color: #ffff00;
+            text-shadow: 1px 1px #000;
+            font-weight: bold;
+        }
+
+        /* Lime green accent */
+        .lime-accent {
+            color: #00ff00;
+            text-shadow: 1px 1px #000;
+            font-weight: bold;
+        }
+
+        /* Timer */
+        #timer {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 1px 1px #000;
+            z-index: 50;
+        }
+
+        /* Error dialogs container */
+        .error-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5000;
+            pointer-events: none;
+        }
+
+        .error-dialog {
+            position: absolute;
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            box-shadow: inset 1px 1px #ffffff, inset -1px -1px #0a0a0a;
+            width: 280px;
+            pointer-events: auto;
+            animation: popIn 0.2s ease-out;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .error-title {
+            background: linear-gradient(to right, #000080, #1084d7);
+            color: #ffffff;
+            padding: 2px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            min-height: 20px;
+            cursor: move;
+        }
+
+        .error-content {
+            padding: 12px;
+            text-align: center;
+            background-color: #c0c0c0;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .error-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .error-buttons {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            padding: 8px 12px 0;
+        }
+
+        .error-btn {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Comic Sans MS', cursive;
+            color: #000;
+            min-width: 50px;
+        }
+
+        .error-btn:active {
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+        }
+    </style>
+</head>
+<body>
+    <!-- Marquee Banner -->
+    <div class="marquee-banner">
+        <marquee behavior="scroll" direction="left" scrollamount="5">
+            ~*~ You've Got Mail... From Jake ~*~ 💌 ~*~ You've Got Mail... From Jake ~*~ 💌 ~*~ You've Got Mail... From Jake ~*~ 💌
+        </marquee>
+    </div>
+
+    <!-- LoveNote.exe Window -->
+    <div class="window">
+        <div class="window-title">
+            <div class="window-title-text">📄 LoveNote.exe</div>
+            <div class="window-buttons">
+                <div class="window-btn">_</div>
+                <div class="window-btn">□</div>
+                <div class="window-btn">✕</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="warning-box">
+                ⚠️ <span class="blink">READ ME!!!</span> ⚠️
+            </div>
+            <div class="day-trade-message">
+                <strong style="color: #ff0000;">WARNING: Extreme volatility detected in Jake's heart.</strong><br>
+                <strong>Cause:</strong> Via trading the S&P 500<br>
+                <br>
+                My feelings aren't a day trade — they're a <span class="lime-accent">LONG-TERM HOLD</span>. 📈💚<br>
+                <br>
+                <strong style="color: #0000ff;">Analyst Rating: STRONG BUY 🚀</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- DateNight.exe Window -->
+    <div class="window" style="width: 350px;">
+        <div class="window-title">
+            <div class="window-title-text">💕 DateNight.exe</div>
+            <div class="window-buttons">
+                <div class="window-btn">_</div>
+                <div class="window-btn">□</div>
+                <div class="window-btn">✕</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div style="text-align: center; margin-bottom: 16px; color: #0000ff; font-weight: bold; font-size: 16px;">
+                🎯 Want to hang out sometime?
+            </div>
+            <div style="text-align: center;">
+                <button class="date-night-button" id="dateButton">Yes! 🎉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dialog Overlay -->
+    <div class="dialog-overlay" id="dialogOverlay">
+        <div class="dialog">
+            <div class="dialog-title">
+                <div style="flex: 1;">Message</div>
+                <div class="window-btn">✕</div>
+            </div>
+            <div class="dialog-content">
+                <div>
+                    So... you finally caught me.<br>
+                    <br>
+                    <strong>Will you go on a date with me?</strong>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn" id="yesBtn">YES</button>
+                <button class="dialog-btn" id="maybeBtn">maybe yes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Celebration container -->
+    <div class="celebration" id="celebration"></div>
+
+    <!-- Timer -->
+    <div id="timer">Time: <span id="timerValue">45</span>s</div>
+
+    <!-- Error Container -->
+    <div class="error-container" id="errorContainer"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Best viewed in Internet Explorer 4.0 at 800x600 🖥️
+    </div>
+
+    <script>
+        const dateButton = document.getElementById('dateButton');
+        const dialogOverlay = document.getElementById('dialogOverlay');
+        const celebration = document.getElementById('celebration');
+        const yesBtn = document.getElementById('yesBtn');
+        const maybeBtn = document.getElementById('maybeBtn');
+
+        let dodgeCount = 0;
+        let isEvasive = true;
+
+        // Random position generator
+        function getRandomPosition() {
+            const buttonWidth = dateButton.offsetWidth;
+            const buttonHeight = dateButton.offsetHeight;
+            const maxX = window.innerWidth - buttonWidth - 20;
+            const maxY = window.innerHeight - buttonHeight - 20;
+
+            const x = Math.random() * Math.max(maxX, 100);
+            const y = Math.random() * Math.max(maxY, 100);
+
+            return { x: Math.max(0, x), y: Math.max(0, y) };
+        }
+
+        // Dodge on hover
+        dateButton.addEventListener('mouseenter', function(e) {
+            if (!isEvasive) return;
+
+            dodgeCount++;
+            const pos = getRandomPosition();
+
+            dateButton.style.position = 'fixed';
+            dateButton.style.left = pos.x + 'px';
+            dateButton.style.top = pos.y + 'px';
+            dateButton.style.zIndex = '100';
+
+            if (dodgeCount >= 5) {
+                isEvasive = false;
+                dateButton.classList.add('caught');
+                dateButton.removeEventListener('mouseenter', arguments.callee);
+                showDialog();
+            }
+        });
+
+        function showDialog() {
+            dialogOverlay.classList.add('show');
+        }
+
+        function triggerCelebration() {
+            // Initiate call
+            window.location.href = 'tel:7166288318';
+        }
+
+        // Button handlers
+        yesBtn.addEventListener('click', triggerCelebration);
+        maybeBtn.addEventListener('click', triggerCelebration);
+
+        // Close dialog on X button
+        document.querySelectorAll('.dialog-title .window-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                dialogOverlay.classList.remove('show');
+            });
+        });
+
+        // Timer functionality
+        let timeRemaining = 45;
+        const timerValue = document.getElementById('timerValue');
+        const errorContainer = document.getElementById('errorContainer');
+        let timerInterval;
+
+        const errorMessages = [
+            'CRITICAL ERROR: Heart.exe has stopped responding',
+            'Runtime error: Undefined variable "COURAGE"',
+            'System32\\feelings.dll not found',
+            'Access violation: Line 1 Column 1',
+            'Fatal exception: NERVOUS_SYSTEM_OVERFLOW',
+            'Application error: BROWSER_CRASH_IMMINENT',
+            'Stack overflow in romance.cpp',
+            'Divide by zero in affection_calculator.exe',
+            'Memory allocation failed for butterflies.txt',
+            'Illegal operation: feelings.exe',
+            'Blue Screen of Heart',
+            'Not enough memory for emotions.dll',
+            'Program error in MSWIN32: GetDatingAdvice failed',
+            'Error loading VIA.DLL - Cannot find file',
+            'Insufficient disk space for crushes.dat',
+            'PANIC: Device driver failed',
+            'Format error: Heart.sys',
+            'Unexpected error in cupid_module.exe',
+            'SEGMENTATION FAULT: romance_handler',
+            'Kernel panic: FEELINGS_UNSTABLE',
+            'Abort, Retry, Fail?',
+            'General Protection Fault',
+            'Unexpected error in mswin32.txt',
+            'Fatal: TSR still resident',
+            'Invalid opcode in emotion.exe',
+            'Error: Device not ready',
+            'Disk write-protected: heart.txt',
+            'File corrupt: love_letter.doc',
+            'Unexpected DOS error 53',
+            'Critical system failure imminent',
+            'Out of environment space',
+            'Cannot find command.com',
+            'Error: Command not recognized',
+            'Abort, Retry, Ignore?',
+            'Bad command or file name',
+            'FATAL: Registry corruption detected',
+            'Windows has encountered an internal error',
+            'Driver.sys caused an invalid page fault',
+            'Fatal exception OE in VXD VMM(01)',
+            'Error: Cannot initialize feelings',
+        ];
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerValue.textContent = timeRemaining;
+
+                if (timeRemaining <= 10) {
+                    timerValue.parentElement.style.color = '#ff0000';
+                    timerValue.parentElement.style.animation = 'blink-animation 0.5s infinite';
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    generateErrorDialogs();
+                }
+            }, 1000);
+        }
+
+        function generateErrorDialogs() {
+            for (let i = 0; i < 40; i++) {
+                setTimeout(() => {
+                    const errorDialog = document.createElement('div');
+                    errorDialog.className = 'error-dialog';
+
+                    const x = Math.random() * (window.innerWidth - 300);
+                    const y = Math.random() * (window.innerHeight - 150);
+                    errorDialog.style.left = x + 'px';
+                    errorDialog.style.top = y + 'px';
+
+                    const messageIndex = Math.floor(Math.random() * errorMessages.length);
+                    const message = errorMessages[messageIndex];
+
+                    errorDialog.innerHTML = `
+                        <div class="error-title">
+                            <div>Error</div>
+                            <div class="window-btn">✕</div>
+                        </div>
+                        <div class="error-content">
+                            <div class="error-icon">⚠️</div>
+                            <div>${message}</div>
+                        </div>
+                        <div class="error-buttons">
+                            <button class="error-btn">OK</button>
+                        </div>
+                    `;
+
+                    errorContainer.appendChild(errorDialog);
+
+                    // Make error dialogs closeable and draggable
+                    const closeBtn = errorDialog.querySelector('.window-btn');
+                    closeBtn.addEventListener('click', () => {
+                        errorDialog.remove();
+                    });
+
+                    const okBtn = errorDialog.querySelector('.error-btn');
+                    okBtn.addEventListener('click', () => {
+                        errorDialog.remove();
+                    });
+
+                    // Simple drag functionality
+                    let isDragging = false;
+                    let offsetX = 0;
+                    let offsetY = 0;
+
+                    const titleBar = errorDialog.querySelector('.error-title');
+                    titleBar.addEventListener('mousedown', (e) => {
+                        isDragging = true;
+                        offsetX = e.clientX - errorDialog.offsetLeft;
+                        offsetY = e.clientY - errorDialog.offsetTop;
+                    });
+
+                    document.addEventListener('mousemove', (e) => {
+                        if (isDragging) {
+                            errorDialog.style.left = (e.clientX - offsetX) + 'px';
+                            errorDialog.style.top = (e.clientY - offsetY) + 'px';
+                        }
+                    });
+
+                    document.addEventListener('mouseup', () => {
+                        isDragging = false;
+                    });
+                }, i * 50); // Stagger the error dialogs
+            }
+        }
+
+        // Start timer on page load
+        startTimer();
+    </script>
+</body>
+</html>
