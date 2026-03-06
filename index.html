@@ -491,24 +491,9 @@
             return { x: Math.max(0, x), y: Math.max(0, y) };
         }
 
-        // Dodge on hover
-        dateButton.addEventListener('mouseenter', function(e) {
-            if (!isEvasive) return;
-
-            dodgeCount++;
-            const pos = getRandomPosition();
-
-            dateButton.style.position = 'fixed';
-            dateButton.style.left = pos.x + 'px';
-            dateButton.style.top = pos.y + 'px';
-            dateButton.style.zIndex = '100';
-
-            if (dodgeCount >= 5) {
-                isEvasive = false;
-                dateButton.classList.add('caught');
-                dateButton.removeEventListener('mouseenter', arguments.callee);
-                showDialog();
-            }
+        // Direct click to RSVP
+        dateButton.addEventListener('click', function(e) {
+            showDialog();
         });
 
         function showDialog() {
@@ -556,9 +541,8 @@
         }
 
         function triggerCelebration() {
-            // Carne asada celebration confirmed!
-            playMariachi();
-            alert('¡Órale, wey! You\'re coming to the party! See you at the carne asada! 🔥🌮');
+            // Open mariachi music video!
+            window.open('https://www.youtube.com/watch?v=9J9YxWNXS4c&list=RD9J9YxWNXS4c&start_radio=1', '_blank');
         }
 
         // Button handlers
